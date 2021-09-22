@@ -8,9 +8,16 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        main: resolve(__dirname, 'index.html'),
-        admin: resolve(__dirname, 'admin/index.html'),
-        app2: resolve(__dirname, 'app2/index.html')
+        main: resolve(__dirname, 'src/apps/home/index.html'),
+        admin: resolve(__dirname, 'src/apps/admin/index.html')
+      },
+      output: {
+        dir: resolve(__dirname, 'dist')
+      }
+    },
+    resolve: {
+      alias: {
+        '@': resolve(__dirname, 'src')
       }
     }
   }
