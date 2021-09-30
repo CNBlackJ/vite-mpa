@@ -1,5 +1,5 @@
 <template>
     <div>
-        I am item
+        I am topbar
     </div>
 </template>
