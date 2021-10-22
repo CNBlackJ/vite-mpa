@@ -3,6 +3,8 @@ import { Link } from "gatsby";
 import { GatsbyImage } from "gatsby-plugin-image";
 
 const Card = ({ article }) => {
+  article.node.image.localFile.childImageSharp = {};
+  article.node.author.picture.localFile.childImageSharp = {};
   return (
     <Link to={`/article/${article.node.slug}`} className="uk-link-reset">
       <div className="uk-card uk-card-muted">
