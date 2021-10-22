@@ -4,11 +4,20 @@ import Layout from "../components/layout";
 import ArticlesComponent from "../components/articles";
 import "../assets/css/main.css";
 
+import { AuthingGuard } from "@authing/react-ui-components";
+import "@authing/react-ui-components/lib/index.min.css";
+
 const IndexPage = () => {
   const data = useStaticQuery(query);
 
   return (
     <Layout seo={data.strapiHomepage.seo}>
+      <AuthingGuard
+        appId="60dd3301930e7601756c2f23"
+        onLogin={(userinfo) => {
+          console.log(userinfo);
+        }}
+      />
       <div className="uk-section">
         <div className="uk-container uk-container-large">
           <h1>{data.strapiHomepage.hero.title}</h1>
