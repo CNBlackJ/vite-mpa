@@ -1,17 +1,16 @@
 import React from "react";
 import { graphql, useStaticQuery } from "gatsby";
 import Layout from "../components/layout";
-import ArticlesComponent from "../components/articles";
+import BlogList from "../components/blog/list/index";
 import "../assets/css/main.css";
 
-const IndexPage = () => {
+const BlogPage = () => {
   const data = useStaticQuery(query);
-
   return (
     <Layout seo={data.strapiHomepage.seo}>
       <div className="uk-section">
         <div className="uk-container uk-container-large">
-          <ArticlesComponent articles={data.allStrapiArticle.edges} />
+          <BlogList articles={data.allStrapiArticle.edges} />
         </div>
       </div>
     </Layout>
@@ -66,4 +65,4 @@ const query = graphql`
   }
 `;
 
-export default IndexPage;
+export default BlogPage;
