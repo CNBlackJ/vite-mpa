@@ -39,6 +39,7 @@ const query = graphql`
           strapiId
           slug
           title
+          updated_at(formatString: "YYYY-MM-DD HH:mm:ss")
           category {
             name
           }
