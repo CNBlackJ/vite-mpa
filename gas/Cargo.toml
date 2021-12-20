@@ -7,3 +7,6 @@ edition = "2018"
 
 [dependencies]
 sys-info = "0.3.4"
+job_scheduler = "*"
+tui = "0.16"
+termion = "1.5"

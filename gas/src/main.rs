@@ -1,7 +1,17 @@
-use sys_info;
+mod app;
+mod runner;
+mod callback;
+mod ui;
+
+fn p() {
+    let r = ui::run();
+    match r {
+        Ok(_) => {},
+        Err(_) => {}
+    };
+}
 
 fn main() {
-    sys_info::cpu_num();
-    let a = sys_info::disk_info();
-    println!("{:#?}", a);
+    // runner::start(show);
+    runner::start(p);
 }
