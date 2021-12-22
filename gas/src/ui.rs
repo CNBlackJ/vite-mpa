@@ -19,8 +19,6 @@ const DATA2: [(f64, f64); 7] = [
     (60.0, 3.0),
 ];
 
-const MEMDATA: [(u64, u64); 7] = [(0, 0); 7];
-
 fn top(gas_info: app::GasInfo) -> Paragraph<'static> {
     let text_top = vec![
         Spans::from(vec![
@@ -76,12 +74,7 @@ fn center(gas_info: app::GasInfo) -> Paragraph<'static> {
     Paragraph::new(text).block(block).wrap(Wrap { trim: true })
 }
 
-fn bottom(gas_info: app::GasInfo) -> Chart<'static> {
-
-    let mem_free = gas_info.mem_info.free;
-
-    MEMDATA
-
+fn bottom() -> Chart<'static> {
     let datasets = vec![Dataset::default()
         .name("data")
         .marker(symbols::Marker::Braille)
@@ -130,7 +123,7 @@ pub fn run() -> Result<(), io::Error> {
     let mut terminal = Terminal::new(backend)?;
 
     let gas_info = app::show_info();
-    // let gas_info2 = app::show_info();
+    let gas_info2 = app::show_info();
 
     terminal.draw(|f| {
         let chunks = Layout::default()
@@ -145,9 +138,9 @@ pub fn run() -> Result<(), io::Error> {
             )
             .split(f.size());
 
-        // f.render_widget(top(gas_info), chunks[0]);
-        // f.render_widget(center(gas_info2), chunks[1]);
-        f.render_widget(bottom(gas_info), chunks[2]);
+        f.render_widget(top(gas_info), chunks[0]);
+        f.render_widget(center(gas_info2), chunks[1]);
+        f.render_widget(bottom(), chunks[2]);
     })?;
     Ok(())
 }
