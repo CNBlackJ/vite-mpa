@@ -1,17 +1,25 @@
+use core::time::Duration;
+use std::time::Instant;
+use app::App;
+
 mod app;
-mod runner;
-mod callback;
 mod ui;
 
-fn p() {
-    let r = ui::run();
-    match r {
-        Ok(_) => {},
-        Err(_) => {}
-    };
-}
-
 fn main() {
-    // runner::start(show);
-    runner::start(p);
+    let tick_rate = Duration::from_millis(1000);
+    let mut last_tick = Instant::now();
+    let mut app_ins = App::new();
+
+    loop {
+        ui::run(&mut app_ins).unwrap();
+
+        if last_tick.elapsed() >= tick_rate {
+            app_ins.on_tick();
+            last_tick = Instant::now();
+        }
+
+        if app_ins.num > 50 {
+            return
+        }
+    }
 }

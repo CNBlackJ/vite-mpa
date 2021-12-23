@@ -5,3 +5,4 @@ dist-ssr
 *.local
 frontend/.cache
 gas/target
+mon/target

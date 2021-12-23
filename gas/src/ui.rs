@@ -1,3 +1,5 @@
+use tui::layout::Rect;
+use tui::Frame;
 use std::io;
 use termion::raw::IntoRawMode;
 use tui::style::{Color, Style, Modifier};
@@ -9,78 +11,70 @@ use tui::text::{Span, Spans};
 
 use crate::app;
 
-const DATA2: [(f64, f64); 7] = [
-    (0.0, 0.0),
-    (10.0, 1.0),
-    (20.0, 0.5),
-    (30.0, 1.5),
-    (40.0, 1.0),
-    (50.0, 2.5),
-    (60.0, 3.0),
-];
-
-fn top(gas_info: app::GasInfo) -> Paragraph<'static> {
+fn top<B: tui::backend::Backend>(f: &mut Frame<B>, app_ins: &app::App, area: Rect) {
     let text_top = vec![
         Spans::from(vec![
             Span::from("hostname: "),
-            Span::from(gas_info.hostname),
+            Span::from(app_ins.gas_info.hostname.to_string()),
             Span::raw(" "),
         ]),
         Spans::from(vec![
             Span::from("cpu num: "),
-            Span::from(gas_info.cpu_num.to_string()),
+            Span::from(app_ins.gas_info.cpu_num.to_string()),
             Span::raw(" "),
         ]),
     ];
     let block_top = Block::default()
         .title("基本信息")
         .borders(Borders::ALL);
-    Paragraph::new(text_top).block(block_top).wrap(Wrap { trim: true })
+    let p = Paragraph::new(text_top).block(block_top).wrap(Wrap { trim: true });
+    f.render_widget(p, area);
 }
 
-fn center(gas_info: app::GasInfo) -> Paragraph<'static> {
+fn center<B: tui::backend::Backend>(f: &mut Frame<B>, app_ins: &app::App, area: Rect) {
     let text = vec![
         Spans::from(vec![
             Span::from("disk info:"),
         ]),
         Spans::from(vec![
             Span::from("total: "),
-            Span::from(gas_info.disk_info.total.to_string()),
+            Span::from(app_ins.gas_info.disk_info.total.to_string()),
         ]),
         Spans::from(vec![
             Span::from("free: "),
-            Span::from(gas_info.disk_info.free.to_string()),
+            Span::from(app_ins.gas_info.disk_info.free.to_string()),
         ]),
         Spans::from(vec![
             Span::from("memory info: "),
         ]),
         Spans::from(vec![
             Span::from("total: "),
-            Span::from(gas_info.mem_info.total.to_string()),
+            Span::from(app_ins.gas_info.mem_info.total.to_string()),
         ]),
         Spans::from(vec![
             Span::from("free: "),
-            Span::from(gas_info.mem_info.free.to_string()),
+            Span::from(app_ins.gas_info.mem_info.free.to_string()),
         ]),
         Spans::from(vec![
             Span::from("avail: "),
-            Span::from(gas_info.mem_info.avail.to_string()),
+            Span::from(app_ins.gas_info.mem_info.avail.to_string()),
         ]),
     ];
 
     let block = Block::default()
         .title("电脑运行状况")
         .borders(Borders::ALL);
-    Paragraph::new(text).block(block).wrap(Wrap { trim: true })
+    let p = Paragraph::new(text).block(block).wrap(Wrap { trim: true });
+    f.render_widget(p, area);
 }
 
-fn bottom() -> Chart<'static> {
+fn bottom<B: tui::backend::Backend>(f: &mut Frame<B>, app_ins: &app::App, area: Rect) {
     let datasets = vec![Dataset::default()
         .name("data")
         .marker(symbols::Marker::Braille)
         .style(Style::default().fg(Color::Yellow))
         .graph_type(GraphType::Line)
-        .data(&DATA2)];
+        .data(&app_ins.signals.mem_signal.points)];
     let chart = Chart::new(datasets)
         .block(
             Block::default()
@@ -114,16 +108,13 @@ fn bottom() -> Chart<'static> {
                     Span::styled("5", Style::default().add_modifier(Modifier::BOLD)),
                 ]),
         );
-    chart
+    f.render_widget(chart, area);
 }
 
-pub fn run() -> Result<(), io::Error> {
+pub fn run(app_ins: &app::App) -> Result<(), io::Error> {
     let stdout = io::stdout().into_raw_mode()?;
     let backend = TermionBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;
-
-    let gas_info = app::show_info();
-    let gas_info2 = app::show_info();
 
     terminal.draw(|f| {
         let chunks = Layout::default()
@@ -131,16 +122,16 @@ pub fn run() -> Result<(), io::Error> {
             .margin(1)
             .constraints(
                 [
-                    Constraint::Percentage(20),
-                    Constraint::Percentage(20),
-                    Constraint::Percentage(60),
+                    Constraint::Percentage(15),
+                    Constraint::Percentage(35),
+                    Constraint::Percentage(50),
                 ].as_ref()
             )
             .split(f.size());
 
-        f.render_widget(top(gas_info), chunks[0]);
-        f.render_widget(center(gas_info2), chunks[1]);
-        f.render_widget(bottom(), chunks[2]);
+        top(f, app_ins, chunks[0]);
+        center(f, app_ins, chunks[1]);
+        bottom(f, app_ins, chunks[2]);
     })?;
     Ok(())
 }
